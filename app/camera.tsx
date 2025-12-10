@@ -1,6 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Octicons from '@expo/vector-icons/Octicons';
 import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
+import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -17,7 +18,10 @@ export default function CameraScreen() {
         cameraRef.current?.takePictureAsync({
             skipProcessing: true,
         }).then(photo => {
-            console.log(photo);
+            router.replace({
+                pathname: "/chat",
+                params: { photo: photo.uri }
+            });
         })
     }
 

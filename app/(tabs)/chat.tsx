@@ -1,9 +1,9 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { FontAwesome } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export type message = {
@@ -36,6 +36,8 @@ export default function ChatScreen() {
         alignSelf: "flex-end"
     }
 
+    const { photo } = useLocalSearchParams();
+
     return (
         <ThemedView style={{ flex: 1 }}>
             <SafeAreaView style={{ flex: 1 }}>
@@ -60,6 +62,20 @@ export default function ChatScreen() {
                         style={styles.textInput}
                         placeholder="De quoi voulez-vous parler ?"
                     />
+
+                    {photo && (
+                        <Image
+                            source={{ uri: photo as string }}
+                            style={{
+                                width: 60,
+                                height: 60,
+                                borderRadius: 10,
+                                margin: 10,
+                                alignSelf: "center",
+                            }}
+                        />
+                    )}
+
                     <View style={styles.containerButton}>
                         <TouchableOpacity style={styles.buttonSend}>
                             <FontAwesome name="send" size={24} color="white" />
