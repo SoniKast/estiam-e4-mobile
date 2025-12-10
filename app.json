@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "estiam-e4-mobilendefinedndefined",
-    "slug": "estiam-e4-mobilendefinedndefined",
+    "name": "estiam-e4-mobile",
+    "slug": "estiam-e4-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "estiame4mobilendefinedndefined",
+    "scheme": "estiame4mobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
