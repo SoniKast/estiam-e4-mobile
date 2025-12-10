@@ -55,15 +55,7 @@ export default function ChatScreen() {
                 }}>
                 </FlatList>
                 <View style={styles.textInputContainer}>
-                    <TextInput
-                        editable
-                        multiline
-                        numberOfLines={3}
-                        style={styles.textInput}
-                        placeholder="De quoi voulez-vous parler ?"
-                    />
-
-                    {photo && (
+                    {photo ? (
                         <Image
                             source={{ uri: photo as string }}
                             style={{
@@ -74,7 +66,16 @@ export default function ChatScreen() {
                                 alignSelf: "center",
                             }}
                         />
-                    )}
+                    )
+                        :
+                        <TextInput
+                            editable
+                            multiline
+                            numberOfLines={3}
+                            style={styles.textInput}
+                            placeholder="De quoi voulez-vous parler ?"
+                        />
+                    }
 
                     <View style={styles.containerButton}>
                         <TouchableOpacity style={styles.buttonSend}>
