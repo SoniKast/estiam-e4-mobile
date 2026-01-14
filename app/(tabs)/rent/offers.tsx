@@ -2,10 +2,12 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { UserCard } from "@/components/UserCard";
 import { useApp } from "@/context/AppContext";
-import { router } from "expo-router";
-import { FlatList, Pressable, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome } from "@expo/vector-icons";
+import { router } from "expo-router";
+import { FlatList, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const distanceUsers = 1000; // (Rayon de 1000km)
 
 const OFFERERS = [
     {
@@ -52,7 +54,7 @@ const OFFERERS = [
 
 export default function OffersScreen() {
     const { getUsersNearby } = useApp();
-    const nearbyProviders = getUsersNearby(10); // Rayon de 10km
+    const nearbyProviders = getUsersNearby(distanceUsers); // Rayon de 10km
 
     return (
         <ThemedView style={{ flex: 1 }}>
@@ -61,7 +63,7 @@ export default function OffersScreen() {
                     Offreurs près de vous
                 </ThemedText>
                 <ThemedText style={{ marginHorizontal: 16, marginBottom: 16, color: '#64748B', fontSize: 14 }}>
-                    Dans un rayon de 10 km
+                    Dans un rayon de {distanceUsers} km
                 </ThemedText>
 
                 {nearbyProviders.length > 0 ? (

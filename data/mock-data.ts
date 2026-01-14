@@ -1,4 +1,4 @@
-import { User, Appointment } from '@/types';
+import { Appointment, User } from '@/types';
 
 /**
  * Données de test pour les utilisateurs
@@ -12,10 +12,10 @@ export const MOCK_USERS: User[] = [
     phone: '+33 6 12 34 56 78',
     userType: 'provider',
     location: {
-      latitude: 48.8566,
-      longitude: 2.3522,
-      city: 'Paris',
-      address: '15 Rue de Rivoli',
+      latitude: 0,
+      longitude: 0,
+      city: 'Position en attente...',
+      address: 'Localisation en cours',
       lastUpdated: new Date().toISOString(),
     },
     rating: 4.5,

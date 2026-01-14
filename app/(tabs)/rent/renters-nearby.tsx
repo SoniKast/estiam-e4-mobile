@@ -1,16 +1,17 @@
-import React from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { UserCard } from '@/components/UserCard';
 import { useApp } from '@/context/AppContext';
 import { FontAwesome } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RentersNearby() {
   const { getUsersNearby } = useApp();
-  const nearbyRenters = getUsersNearby(10); // Rayon de 10km
+  const distanceUsers = 1000; // (Rayon de 1000km)
+  const nearbyRenters = getUsersNearby(distanceUsers); // Rayon de 10km
 
   return (
     <ThemedView style={styles.container}>
@@ -20,7 +21,7 @@ export default function RentersNearby() {
             Loueurs à proximité
           </ThemedText>
           <ThemedText style={styles.subtitle}>
-            Dans un rayon de 10 km
+            Dans un rayon de {distanceUsers} km
           </ThemedText>
         </View>
 

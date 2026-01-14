@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, Appointment, Rating, UserWithDistance, Location, AppointmentStatus } from '@/types';
-import { StorageService } from '@/services/storage.service';
-import { LocationService } from '@/services/location.service';
 import { initializeMockData } from '@/data/mock-data';
+import { LocationService } from '@/services/location.service';
+import { StorageService } from '@/services/storage.service';
+import { Appointment, AppointmentStatus, Location, Rating, User, UserWithDistance } from '@/types';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 interface AppContextType {
   // État
@@ -18,7 +18,7 @@ interface AppContextType {
   // Actions rendez-vous
   createAppointment: (appointment: Omit<Appointment, 'id' | 'createdAt'>) => Promise<void>;
   updateAppointmentStatus: (id: string, status: AppointmentStatus) => Promise<void>;
-  
+
   // Actions notation
   addRating: (appointmentId: string, rating: Rating, isProvider: boolean) => Promise<void>;
 
@@ -30,7 +30,7 @@ interface AppContextType {
   getCompletedAppointments: () => Appointment[];
   getUserById: (userId: string) => User | undefined;
   getAppointmentById: (appointmentId: string) => Appointment | undefined;
-  
+
   // Utilitaires
   refreshData: () => Promise<void>;
 }
@@ -47,6 +47,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     loadInitialData();
   }, []);
+
+  // Surveiller la position de Marie en temps réel
+  useEffect(() => {
+    let locationSubscription: Location.LocationSubscription | null = null;
+
+    const startWatchingMarieLocation = async () => {
+      if (currentUser && currentUser.id === '1') {
+        locationSubscription = await LocationService.watchLocation(
+          async (location) => {
+            const newLocation = await LocationService.createLocationFromCoords(location);
+            await updateUserLocationForUser('1', newLocation);
+          }
+        );
+      }
+    };
+
+    startWatchingMarieLocation();
+
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
+  }, [currentUser]);
 
   /**
    * Charger les données initiales
@@ -69,6 +93,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       // Charger tous les rendez-vous
       const allAppointments = await StorageService.getAppointments();
       setAppointments(allAppointments);
+
+      // Si l'utilisateur Marie est connecté, mettre à jour sa localisation avec la position réelle
+      if (user && user.id === '1') {
+        await updateMarieLocationWithRealPosition();
+      }
     } catch (error) {
       console.error('Error loading initial data:', error);
     } finally {
@@ -258,6 +287,52 @@ export function AppProvider({ children }: { children: ReactNode }) {
    */
   const getAppointmentById = (appointmentId: string): Appointment | undefined => {
     return appointments.find((apt) => apt.id === appointmentId);
+  };
+
+  /**
+   * Mettre à jour la localisation de Marie avec la position réelle de l'appareil
+   */
+  const updateMarieLocationWithRealPosition = async () => {
+    try {
+      const currentLocation = await LocationService.getCurrentLocation();
+      if (!currentLocation) return;
+
+      const newLocation = await LocationService.createLocationFromCoords(currentLocation);
+
+      // Mettre à jour l'utilisateur Marie (ID: 1) avec la position réelle
+      await updateUserLocationForUser('1', newLocation);
+    } catch (error) {
+      console.error('Error updating Marie location:', error);
+    }
+  };
+
+  /**
+   * Mettre à jour la localisation d'un utilisateur spécifique
+   */
+  const updateUserLocationForUser = async (userId: string, location: Location) => {
+    try {
+      const userToUpdate = users.find(u => u.id === userId);
+      if (!userToUpdate) return;
+
+      const updatedUser = {
+        ...userToUpdate,
+        location,
+      };
+
+      await StorageService.updateUser(userId, { location });
+
+      // Mettre à jour dans la liste des utilisateurs
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? updatedUser : u))
+      );
+
+      // Si c'est l'utilisateur courant, mettre à jour aussi
+      if (currentUser && currentUser.id === userId) {
+        setCurrentUserState(updatedUser);
+      }
+    } catch (error) {
+      console.error('Error updating user location:', error);
+    }
   };
 
   const value: AppContextType = {
